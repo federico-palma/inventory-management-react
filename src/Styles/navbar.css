@@ -11,7 +11,7 @@ nav {
     display: flex;
     align-items: center;
     justify-content: left;
-
+    z-index: 10;
 }
 
 #logo-container {
