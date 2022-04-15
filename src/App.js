@@ -8,13 +8,7 @@ import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-alpine.css';
 
 function App() {
-  const gridRef = useRef();
-
-  const priceComponent = (cell) => {
-    return '$' + cell.value
-  }
-
-  const [rowData, setRowData] = useState([
+  let productList = [
     {id: 1, name: 'Vestido 1', price: 100.00, quantity: 5},
     {id: 2, name: 'Vestido 2', price: 150.00, quantity: 3},
     {id: 3, name: 'Vestido 3', price: 200.00, quantity: 1},
@@ -25,7 +19,15 @@ function App() {
     {id: 8, name: 'Pantalon 1', price: 50.75, quantity: 5},
     {id: 9, name: 'Pantalon 2', price: 150.20, quantity: 10},
     {id: 10, name: 'Pantalon 3', price: 250.00, quantity: 8},
-  ]);
+  ]
+
+  const gridRef = useRef();
+
+  const priceComponent = (cell) => {
+    return '$' + cell.value
+  }
+
+  const [rowData, setRowData] = useState(productList);
 
   const defaultColDef = useMemo( () => ({
     flex: 1,
@@ -68,16 +70,28 @@ function App() {
     gridRef.current.api.getSelectedNodes()
   })
 
+  const [showNewItemMenu, setShowNewItemMenu] = useState(false)
+  const handleshowNewItemMenu = (() => {
+    setShowNewItemMenu(!showNewItemMenu)
+  })
+
   return (
     <div className="App">
       <Navbar></Navbar>
 
       <div id="grid-options">
-        <button type="button" id="new-item-btn">Agregar Producto</button>
-        <button type="button" id="" onClick={deselectAllHandler}>Deselect</button>
-
+        <button type="button" id="new-item-btn" onClick={handleshowNewItemMenu}>Agregar Producto</button>
+        {/* <button type="button" id="" onClick={deselectAllHandler}>Deselect</button> */}
       </div>
-
+      
+      {showNewItemMenu && 
+      <div id="add-new-item-menu">
+        <input id="new-item-name" type="text" placeholder="Nombre del producto"/>
+        <input id="new-item-quantity" type="number" placeholder="Cantidad"/>
+        <input id="new-item-price" type="number" placeholder="Precio"/>
+        <button id="confirm-new-item-btn" type='button'>Confirmar</button>
+        <button id="cancel-new-item-btn" type='button'>Cancelar</button>
+      </div>}
 
       <div className="ag-theme-alpine" style={{height: 500, width: '90%', margin: 'auto', marginTop: 30}}>
            <AgGridReact
