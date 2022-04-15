@@ -1,6 +1,6 @@
 import './App.css';
 
-import React, { useState } from 'react';
+import React, { useCallback, useMemo, useRef, useState } from 'react';
 import { AgGridReact } from 'ag-grid-react';
 import Navbar from './Components/Navbar';
 
@@ -8,7 +8,13 @@ import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-alpine.css';
 
 function App() {
-  const [rowData] = useState([
+  const gridRef = useRef();
+
+  const priceComponent = (cell) => {
+    return '$' + cell.value
+  }
+
+  const [rowData, setRowData] = useState([
     {id: 1, name: 'Vestido 1', price: 100.00, quantity: 5},
     {id: 2, name: 'Vestido 2', price: 150.00, quantity: 3},
     {id: 3, name: 'Vestido 3', price: 200.00, quantity: 1},
@@ -21,26 +27,69 @@ function App() {
     {id: 10, name: 'Pantalon 3', price: 250.00, quantity: 8},
   ]);
 
-  const [columnDefs] = useState([
-    { field: "name", sortable: true },
-    { field: "price", sortable: true, filter: true },
-    { field: "quantity", sortable: true },
-  ]);     
+  const defaultColDef = useMemo( () => ({
+    flex: 1,
+    filterParams: {
+      buttons: ['reset']
+    },
+    cellStyle: {justifyContent: 'center'}
+  }), [])
+
+  const [columnDefs, setColumnDefs] = useState([
+    {
+    checkboxSelection: true,
+    maxWidth: 50,
+    },
+    {
+    headerName: "Producto", 
+    field: "name", 
+    sortable: true,
+    cellStyle: {justifyContent: 'center'}
+    },
+    {
+    headerName: "Cantidad", 
+    field: "quantity", 
+    sortable: true
+    },
+    {
+    headerName: "Precio", 
+    field: "price", 
+    sortable: true, 
+    filter: "agNumberColumnFilter",
+    cellRenderer: priceComponent
+    },
+  ]);  
+  
+  const cellClickedListener = useCallback(e => {
+    console.log('CellClicked', e.data.name)
+  })
+  
+  const deselectAllHandler = useCallback(e => {
+    gridRef.current.api.getSelectedNodes()
+  })
 
   return (
     <div className="App">
       <Navbar></Navbar>
 
       <div id="grid-options">
-        <button id="add-item">Agregar Producto</button>
+        <button type="button" id="new-item-btn">Agregar Producto</button>
+        <button type="button" id="" onClick={deselectAllHandler}>Deselect</button>
+
       </div>
 
 
-      <div className="ag-theme-alpine" style={{height: 400, width: 650, margin: 'auto', marginTop: 100}}>
+      <div className="ag-theme-alpine" style={{height: 500, width: '90%', margin: 'auto', marginTop: 30}}>
            <AgGridReact
-               rowData={rowData}
-               columnDefs={columnDefs}>
-           </AgGridReact>
+              ref={gridRef}
+              onCellClicked={cellClickedListener}
+              rowData={rowData}
+              columnDefs={columnDefs}
+              defaultColDef={defaultColDef}
+              animateRows={true}
+              singleClickEdit
+              rowSelection='multiple'
+            />
        </div>
     </div>
   );
