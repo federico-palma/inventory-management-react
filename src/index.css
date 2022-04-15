@@ -11,3 +11,31 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+
+.ag-header-cell-label {
+  justify-content: center;
+}
+
+/* Grid Menu */
+#grid-options {
+  margin-top: 110px;
+  padding: 10px 50px;
+  display: flex;
+  justify-content: left;
+}
+
+#grid-options button {
+  margin: 0px 10px;
+  font-size: 1rem;
+  padding: 10px;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+#new-item-btn{
+  background-color: #3030c7;
+  color: white;
+  border: none;
+}
