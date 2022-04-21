@@ -8,6 +8,8 @@ import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-alpine.css';
 
 function App() {
+  const gridRef = useRef();
+
   let productList = [
     {id: 1, name: 'Vestido 1', price: 100.00, quantity: 5},
     {id: 2, name: 'Vestido 2', price: 150.00, quantity: 3},
@@ -20,14 +22,12 @@ function App() {
     {id: 9, name: 'Pantalon 2', price: 150.20, quantity: 10},
     {id: 10, name: 'Pantalon 3', price: 250.00, quantity: 8},
   ]
-
-  const gridRef = useRef();
+  
+  const [rowData, setRowData] = useState(productList);
 
   const priceComponent = (cell) => {
     return '$' + cell.value
   }
-
-  const [rowData, setRowData] = useState(productList);
 
   const defaultColDef = useMemo( () => ({
     flex: 1,
@@ -62,41 +62,60 @@ function App() {
     },
   ]);  
   
-  const cellClickedListener = useCallback(e => {
-    console.log('CellClicked', e.data.name)
-  })
-  
-  const deselectAllHandler = useCallback(e => {
-    gridRef.current.api.getSelectedNodes()
-  })
+  // const deselectAllHandler = useCallback(e => {
+  //   gridRef.current.api.getSelectedNodes()
+  // })
 
   const [showNewItemMenu, setShowNewItemMenu] = useState(false)
-  const handleshowNewItemMenu = (() => {
+  const handleShowNewItemMenu = (() => {
     setShowNewItemMenu(!showNewItemMenu)
   })
+
+  const handleAddNewItem = () => {
+    let newItem = {
+      id: productList.length + 1,
+      name: document.getElementById('new-item-name').value,
+      price: document.getElementById('new-item-price').value,
+      quantity: document.getElementById('new-item-quantity').value,
+    }
+    productList = [newItem, ...productList];
+    setRowData(productList)
+    clearNewItemMenu()
+    handleShowNewItemMenu()
+  }
+
+  const handleCancelNewItem = () => {
+    clearNewItemMenu()
+    handleShowNewItemMenu()
+  }
+
+  function clearNewItemMenu(params) {
+    document.getElementById('new-item-name').value = null
+    document.getElementById('new-item-price').value = null
+    document.getElementById('new-item-quantity').value = null
+  }
 
   return (
     <div className="App">
       <Navbar></Navbar>
 
       <div id="grid-options">
-        <button type="button" id="new-item-btn" onClick={handleshowNewItemMenu}>Agregar Producto</button>
+        <button type="button" id="new-item-btn" onClick={handleShowNewItemMenu}>Agregar Producto</button>
         {/* <button type="button" id="" onClick={deselectAllHandler}>Deselect</button> */}
       </div>
-      
+
       {showNewItemMenu && 
       <div id="add-new-item-menu">
-        <input id="new-item-name" type="text" placeholder="Nombre del producto"/>
-        <input id="new-item-quantity" type="number" placeholder="Cantidad"/>
-        <input id="new-item-price" type="number" placeholder="Precio"/>
-        <button id="confirm-new-item-btn" type='button'>Confirmar</button>
-        <button id="cancel-new-item-btn" type='button'>Cancelar</button>
+        <input id="new-item-name" type="text" placeholder="Nombre del producto" autocomplete='off'/>
+        <input id="new-item-quantity" type="number" placeholder="Cantidad" autocomplete='off'/>
+        <input id="new-item-price" type="number" placeholder="Precio" autocomplete='off'/>
+        <button id="confirm-new-item-btn" type='button' onClick={handleAddNewItem}>Confirmar</button>
+        <button id="cancel-new-item-btn" type='button' onClick={handleCancelNewItem}>Cancelar</button>
       </div>}
 
       <div className="ag-theme-alpine" style={{height: 500, width: '90%', margin: 'auto', marginTop: 30}}>
            <AgGridReact
               ref={gridRef}
-              onCellClicked={cellClickedListener}
               rowData={rowData}
               columnDefs={columnDefs}
               defaultColDef={defaultColDef}

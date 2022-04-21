@@ -39,3 +39,33 @@ code {
   color: white;
   border: none;
 }
+
+#add-new-item-menu {
+  display: flex;
+  justify-content: center;
+}
+
+#add-new-item-menu > * {
+  margin: 0px 15px;
+}
+
+#add-new-item-menu > input {
+  font-size: 1.1rem;
+  padding: 5px;
+}
+
+#confirm-new-item-btn {
+  font-size: 1.0rem;
+  color: white;
+  background-color: #15a015;
+  border: none;
+  border-radius: 10px;
+}
+
+#cancel-new-item-btn {
+  font-size: 1.0rem;
+  color: white;
+  background-color: #ec1a1a;
+  border: none;
+  border-radius: 10px;
+}
